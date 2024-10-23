@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "391529034376",
+    "project_id": "uv-intern-task03",
+    "storage_bucket": "uv-intern-task03.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:391529034376:android:9232420534946371d9a53d",
+        "android_client_info": {
+          "package_name": "com.example.uv_intern_task_03"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCrB12FWGwAG69GTX_FLD0JFDxMOr6C7RY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
