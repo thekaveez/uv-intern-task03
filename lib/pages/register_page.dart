@@ -1,15 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:uv_intern_task_03/components/my_text_form_field.dart';
 import 'package:uv_intern_task_03/pages/login_page.dart';
+import 'package:uv_intern_task_03/services/auth_service.dart';
 
-class RegisterPage extends StatelessWidget {
+class RegisterPage extends StatefulWidget {
    RegisterPage({super.key});
 
+  @override
+  State<RegisterPage> createState() => _RegisterPageState();
+}
+
+class _RegisterPageState extends State<RegisterPage> {
   final nameController = TextEditingController();
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
+
+  Future<void> addUserDetails() async {
+    try {
+      await FirebaseFirestore.instance.collection('users').add({
+        'name': nameController.text.trim(),
+        'email': emailController.text.trim(),
+      });
+    } catch (e) {
+      print("Error adding user details: $e");
+    }
+  }
+
+  void signUserUp() async {
+    try {
+      showDialog(
+          context: context,
+          builder: (context) {
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
+          });
+
+      if(passwordController.text.trim() == confirmPasswordController.text.trim()){
+
+        UserCredential userCredential = await FirebaseAuth.instance
+            .createUserWithEmailAndPassword(
+          email: emailController.text.trim(),
+          password: passwordController.text.trim(),
+        );
+
+          await addUserDetails();
+
+
+
+        Navigator.pop(context);
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => LoginPage()),
+        );
+      } else{
+        Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Passwords do not match'),
+          ),
+        );
+
+      }
+
+    } on FirebaseAuthException catch (e) {
+      Navigator.pop(context);
+      print("Error: ${e.message}");
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.message ?? 'Login failed'),
+        ),
+      );
+    }
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -84,7 +152,7 @@ class RegisterPage extends StatelessWidget {
                     Expanded(
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.push(context, MaterialPageRoute(builder: (context) =>  LoginPage()));
+                          signUserUp();
                         },
                         style: ButtonStyle(
                             padding: WidgetStateProperty.all<EdgeInsetsGeometry>(const EdgeInsets.symmetric(horizontal: 48, vertical: 16)),
@@ -140,7 +208,9 @@ class RegisterPage extends StatelessWidget {
                                   borderRadius: BorderRadius.circular(12)
                               ),
                               child: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    AuthService().signInWithGoogle(context);
+                                  },
                                   icon: Image(image: Image.asset('assets/google_icon.png', width: 24, height: 24, color: Colors.black).image)
                               )
                           )

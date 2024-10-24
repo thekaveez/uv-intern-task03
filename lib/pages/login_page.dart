@@ -4,6 +4,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:uv_intern_task_03/pages/auth_page.dart';
 import 'package:uv_intern_task_03/pages/home_page.dart';
 import 'package:uv_intern_task_03/pages/register_page.dart';
+import 'package:uv_intern_task_03/services/auth_service.dart';
 
 import '../components/my_text_form_field.dart';
 
@@ -35,11 +36,11 @@ class _LoginPageState extends State<LoginPage> {
       );
 
       if (userCredential.user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const HomePage()),
+        );
         Navigator.pop(context);
-        // Navigator.pushReplacement(
-        //   context,
-        //   MaterialPageRoute(builder: (context) => const HomePage()),
-        // );
       }
     } on FirebaseAuthException catch (e) {
       print("Error: ${e.message}");
@@ -175,7 +176,9 @@ class _LoginPageState extends State<LoginPage> {
                                   borderRadius: BorderRadius.circular(12)
                               ),
                               child: IconButton(
-                                  onPressed: () {},
+                                  onPressed: () {
+                                    AuthService().signInWithGoogle(context);
+                                  },
                                   icon: Image(image: Image.asset('assets/google_icon.png', width: 24, height: 24, color: Colors.black).image)
                               )
                           )
